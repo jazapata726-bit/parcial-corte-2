@@ -1,0 +1,261 @@
+{
+  "AWSTemplateFormatVersion": "2010-09-09",
+  "Description": "API REST Eventos: Spring Boot, Docker, PostgreSQL y EC2. Crea recursos facturables; revisar el plan de la cuenta.",
+  "Metadata": {
+    "Application": "eventos-api",
+    "PayloadSHA256": "d5cc77b790bb3563e6f52d10f8f76041cc6e4f5c6a738b7efc1fe855b798a2f1"
+  },
+  "Parameters": {
+    "AmazonLinuxImage": {
+      "Type": "AWS::SSM::Parameter::Value<AWS::EC2::Image::Id>",
+      "Default": "/aws/service/ami-amazon-linux-latest/al2023-ami-kernel-default-x86_64"
+    },
+    "InstanceType": {
+      "Type": "String",
+      "Default": "t3.micro",
+      "AllowedValues": [
+        "t3.micro",
+        "t3.small"
+      ],
+      "Description": "t3.micro como opcion inicial; t3.small dispone de mas memoria y tiene mayor coste."
+    }
+  },
+  "Resources": {
+    "Vpc": {
+      "Type": "AWS::EC2::VPC",
+      "Properties": {
+        "CidrBlock": "10.86.0.0/16",
+        "EnableDnsSupport": true,
+        "EnableDnsHostnames": true,
+        "Tags": [
+          {
+            "Key": "Name",
+            "Value": "eventos-vpc"
+          }
+        ]
+      }
+    },
+    "InternetGateway": {
+      "Type": "AWS::EC2::InternetGateway"
+    },
+    "GatewayAttachment": {
+      "Type": "AWS::EC2::VPCGatewayAttachment",
+      "Properties": {
+        "VpcId": {
+          "Ref": "Vpc"
+        },
+        "InternetGatewayId": {
+          "Ref": "InternetGateway"
+        }
+      }
+    },
+    "PublicSubnet": {
+      "Type": "AWS::EC2::Subnet",
+      "Properties": {
+        "VpcId": {
+          "Ref": "Vpc"
+        },
+        "CidrBlock": "10.86.1.0/24",
+        "MapPublicIpOnLaunch": true,
+        "AvailabilityZone": {
+          "Fn::Select": [
+            0,
+            {
+              "Fn::GetAZs": ""
+            }
+          ]
+        }
+      }
+    },
+    "RouteTable": {
+      "Type": "AWS::EC2::RouteTable",
+      "Properties": {
+        "VpcId": {
+          "Ref": "Vpc"
+        }
+      }
+    },
+    "PublicRoute": {
+      "Type": "AWS::EC2::Route",
+      "DependsOn": "GatewayAttachment",
+      "Properties": {
+        "RouteTableId": {
+          "Ref": "RouteTable"
+        },
+        "DestinationCidrBlock": "0.0.0.0/0",
+        "GatewayId": {
+          "Ref": "InternetGateway"
+        }
+      }
+    },
+    "RouteAssociation": {
+      "Type": "AWS::EC2::SubnetRouteTableAssociation",
+      "Properties": {
+        "SubnetId": {
+          "Ref": "PublicSubnet"
+        },
+        "RouteTableId": {
+          "Ref": "RouteTable"
+        }
+      }
+    },
+    "ApiSecurityGroup": {
+      "Type": "AWS::EC2::SecurityGroup",
+      "Properties": {
+        "GroupDescription": "HTTP publico para API de eventos; PostgreSQL queda interno",
+        "VpcId": {
+          "Ref": "Vpc"
+        },
+        "SecurityGroupIngress": [
+          {
+            "IpProtocol": "tcp",
+            "FromPort": 80,
+            "ToPort": 80,
+            "CidrIp": "0.0.0.0/0",
+            "Description": "API REST del parcial"
+          }
+        ]
+      }
+    },
+    "ApiInstance": {
+      "Type": "AWS::EC2::Instance",
+      "DependsOn": [
+        "PublicRoute",
+        "RouteAssociation"
+      ],
+      "CreationPolicy": {
+        "ResourceSignal": {
+          "Count": 1,
+          "Timeout": "PT30M"
+        }
+      },
+      "Properties": {
+        "ImageId": {
+          "Ref": "AmazonLinuxImage"
+        },
+        "InstanceType": {
+          "Ref": "InstanceType"
+        },
+        "CreditSpecification": {
+          "CPUCredits": "standard"
+        },
+        "MetadataOptions": {
+          "HttpEndpoint": "enabled",
+          "HttpTokens": "required"
+        },
+        "NetworkInterfaces": [
+          {
+            "DeviceIndex": "0",
+            "AssociatePublicIpAddress": true,
+            "DeleteOnTermination": true,
+            "GroupSet": [
+              {
+                "Ref": "ApiSecurityGroup"
+              }
+            ],
+            "SubnetId": {
+              "Ref": "PublicSubnet"
+            }
+          }
+        ],
+        "BlockDeviceMappings": [
+          {
+            "DeviceName": "/dev/xvda",
+            "Ebs": {
+              "VolumeType": "gp3",
+              "VolumeSize": 16,
+              "Encrypted": true,
+              "DeleteOnTermination": true
+            }
+          }
+        ],
+        "Tags": [
+          {
+            "Key": "Name",
+            "Value": "eventos-api-parcial"
+          }
+        ],
+        "UserData": {
+          "Fn::Base64": {
+            "Fn::Sub": "#!/bin/bash\nset -euo pipefail\nexec > >(tee -a /var/log/eventos-despliegue.log /dev/console) 2>&1\ndnf install -y aws-cfn-bootstrap\nfinalizar() {\n  resultado=$?\n  trap - EXIT\n  /opt/aws/bin/cfn-signal -e \"$resultado\" --stack '${AWS::StackName}' --resource ApiInstance --region '${AWS::Region}' || true\n  exit \"$resultado\"\n}\ntrap finalizar EXIT\ndnf install -y docker python3\nsystemctl enable --now docker\nmkdir -p /usr/local/lib/docker/cli-plugins\ncurl --fail --location --retry 3 https://github.com/docker/compose/releases/download/v2.39.4/docker-compose-linux-x86_64 -o /usr/local/lib/docker/cli-plugins/docker-compose\nchmod +x /usr/local/lib/docker/cli-plugins/docker-compose\nif ! swapon --show | grep -q /swapfile; then\n  fallocate -l 2G /swapfile\n  chmod 600 /swapfile\n  mkswap /swapfile\n  swapon /swapfile\n  echo '/swapfile none swap sw 0 0' >> /etc/fstab\nfi\ninstall -d -m 755 /opt/eventos-api\ncd /opt/eventos-api\ncat <<'PROYECTO_B64' | base64 --decode > /tmp/eventos-proyecto.tar.gz\n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\nPROYECTO_B64\necho 'd5cc77b790bb3563e6f52d10f8f76041cc6e4f5c6a738b7efc1fe855b798a2f1  /tmp/eventos-proyecto.tar.gz' | sha256sum --check\ntar -xzf /tmp/eventos-proyecto.tar.gz\numask 077\nclave=$(python3 -c 'import secrets; print(secrets.token_hex(24))')\nprintf 'DB_PASSWORD=%s\\nAPI_PORT=80\\n' \"$clave\" > .env\nunset clave\ndocker compose up -d --build\nfor intento in $(seq 1 90); do\n  if curl --fail --silent http://127.0.0.1/actuator/health; then\n    docker compose ps\n    echo 'API de eventos disponible. Despliegue terminado.'\n    exit 0\n  fi\n  sleep 2\ndone\ndocker compose logs --tail=80 api\nexit 1\n"
+          }
+        }
+      }
+    }
+  },
+  "Outputs": {
+    "ApiUrl": {
+      "Description": "URL publica para la entrega",
+      "Value": {
+        "Fn::Join": [
+          "",
+          [
+            "http://",
+            {
+              "Fn::GetAtt": [
+                "ApiInstance",
+                "PublicDnsName"
+              ]
+            }
+          ]
+        ]
+      }
+    },
+    "HealthUrl": {
+      "Description": "Comprobacion de salud",
+      "Value": {
+        "Fn::Join": [
+          "",
+          [
+            {
+              "Fn::Join": [
+                "",
+                [
+                  "http://",
+                  {
+                    "Fn::GetAtt": [
+                      "ApiInstance",
+                      "PublicDnsName"
+                    ]
+                  }
+                ]
+              ]
+            },
+            "/actuator/health"
+          ]
+        ]
+      }
+    },
+    "EventosUrl": {
+      "Description": "Listado de eventos",
+      "Value": {
+        "Fn::Join": [
+          "",
+          [
+            {
+              "Fn::Join": [
+                "",
+                [
+                  "http://",
+                  {
+                    "Fn::GetAtt": [
+                      "ApiInstance",
+                      "PublicDnsName"
+                    ]
+                  }
+                ]
+              ]
+            },
+            "/api/eventos"
+          ]
+        ]
+      }
+    },
+    "InstanceId": {
+      "Description": "Instancia EC2 que ejecuta los contenedores",
+      "Value": {
+        "Ref": "ApiInstance"
+      }
+    }
+  }
+}

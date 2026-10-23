@@ -1,0 +1,27 @@
+PRUEBAS DE INTEGRACIÓN JAVA — EJECUCIÓN LOCAL
+Proyecto: eventos-api
+Java 17 · Spring Boot · Maven · MockMvc · H2
+
+Pruebas: 14
+Fallos: 0
+Errores: 0
+Omitidas: 0
+
+Casos comprobados:
+- crudCompletoDeAsistentes: CORRECTO
+- rechazaJsonFechaEIdentificadorInvalidos: CORRECTO
+- validaCamposObligatoriosDeEvento: CORRECTO
+- retirarInscripcionConservaLosRegistrosYLasOtrasInscripciones: CORRECTO
+- relacionMuchosAMuchosEnAmbasDirecciones: CORRECTO
+- borrarAsistenteConservaEventosYLosDemasAsistentes: CORRECTO
+- rechazaCorreosDuplicadosAlCrearYActualizar: CORRECTO
+- controlaInscripcionDuplicadaYRecursosInexistentes: CORRECTO
+- validaNombreYCorreoDeAsistente: CORRECTO
+- crudCompletoDeEventos: CORRECTO
+- inicioYSaludSonPublicos: CORRECTO
+- borrarEventoConservaAsistentesYLosDemasEventos: CORRECTO
+- recursosInexistentesDevuelven404: CORRECTO
+- actualizarDatosConservaLaInscripcion: CORRECTO
+
+Fuente: informe JUnit generado al ejecutar Maven.
+Estas comprobaciones corresponden al entorno local; no acreditan un despliegue público.

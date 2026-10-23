@@ -1,0 +1,31 @@
+services:
+  db:
+    image: postgres:17-alpine
+    restart: unless-stopped
+    environment:
+      POSTGRES_DB: eventosdb
+      POSTGRES_USER: eventos_user
+      POSTGRES_PASSWORD: ${DB_PASSWORD:?Crea el archivo .env a partir de .env.example}
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U eventos_user -d eventosdb"]
+      interval: 5s
+      timeout: 5s
+      retries: 15
+  api:
+    build: .
+    image: eventos-api:1.0
+    restart: unless-stopped
+    ports:
+      - "${API_PORT:-8080}:8080"
+    environment:
+      SPRING_PROFILES_ACTIVE: prod
+      DB_URL: jdbc:postgresql://db:5432/eventosdb
+      DB_USERNAME: eventos_user
+      DB_PASSWORD: ${DB_PASSWORD:?Crea el archivo .env a partir de .env.example}
+    depends_on:
+      db:
+        condition: service_healthy
+volumes:
+  postgres_data:

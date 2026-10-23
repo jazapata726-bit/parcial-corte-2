@@ -1,0 +1,436 @@
+{
+  "contexto": "Ejecución local del JAR con H2; no es evidencia de una URL pública de AWS.",
+  "ejecutor": "Newman",
+  "solicitudes": {
+    "total": 33,
+    "pending": 0,
+    "failed": 0
+  },
+  "comprobaciones": {
+    "total": 47,
+    "pending": 0,
+    "failed": 0
+  },
+  "fallos": 0,
+  "resultados": [
+    {
+      "solicitud": "01 - Salud",
+      "metodo": "GET",
+      "estado_http": 200,
+      "comprobaciones": [
+        {
+          "nombre": "Estado HTTP 200",
+          "correcta": true
+        },
+        {
+          "nombre": "Comprobar status",
+          "correcta": true
+        }
+      ]
+    },
+    {
+      "solicitud": "02 - Crear evento A",
+      "metodo": "POST",
+      "estado_http": 201,
+      "comprobaciones": [
+        {
+          "nombre": "Estado HTTP 201",
+          "correcta": true
+        }
+      ]
+    },
+    {
+      "solicitud": "03 - Crear evento B",
+      "metodo": "POST",
+      "estado_http": 201,
+      "comprobaciones": [
+        {
+          "nombre": "Estado HTTP 201",
+          "correcta": true
+        }
+      ]
+    },
+    {
+      "solicitud": "04 - Listar eventos",
+      "metodo": "GET",
+      "estado_http": 200,
+      "comprobaciones": [
+        {
+          "nombre": "Estado HTTP 200",
+          "correcta": true
+        }
+      ]
+    },
+    {
+      "solicitud": "05 - Consultar evento A",
+      "metodo": "GET",
+      "estado_http": 200,
+      "comprobaciones": [
+        {
+          "nombre": "Estado HTTP 200",
+          "correcta": true
+        },
+        {
+          "nombre": "Comprobar nombre",
+          "correcta": true
+        }
+      ]
+    },
+    {
+      "solicitud": "06 - Actualizar evento A",
+      "metodo": "PUT",
+      "estado_http": 200,
+      "comprobaciones": [
+        {
+          "nombre": "Estado HTTP 200",
+          "correcta": true
+        },
+        {
+          "nombre": "Comprobar lugar",
+          "correcta": true
+        }
+      ]
+    },
+    {
+      "solicitud": "07 - Crear asistente A",
+      "metodo": "POST",
+      "estado_http": 201,
+      "comprobaciones": [
+        {
+          "nombre": "Estado HTTP 201",
+          "correcta": true
+        }
+      ]
+    },
+    {
+      "solicitud": "08 - Crear asistente B",
+      "metodo": "POST",
+      "estado_http": 201,
+      "comprobaciones": [
+        {
+          "nombre": "Estado HTTP 201",
+          "correcta": true
+        }
+      ]
+    },
+    {
+      "solicitud": "09 - Listar asistentes",
+      "metodo": "GET",
+      "estado_http": 200,
+      "comprobaciones": [
+        {
+          "nombre": "Estado HTTP 200",
+          "correcta": true
+        }
+      ]
+    },
+    {
+      "solicitud": "10 - Consultar asistente A",
+      "metodo": "GET",
+      "estado_http": 200,
+      "comprobaciones": [
+        {
+          "nombre": "Estado HTTP 200",
+          "correcta": true
+        },
+        {
+          "nombre": "Comprobar nombre",
+          "correcta": true
+        }
+      ]
+    },
+    {
+      "solicitud": "11 - Actualizar asistente A",
+      "metodo": "PUT",
+      "estado_http": 200,
+      "comprobaciones": [
+        {
+          "nombre": "Estado HTTP 200",
+          "correcta": true
+        },
+        {
+          "nombre": "Comprobar nombre",
+          "correcta": true
+        }
+      ]
+    },
+    {
+      "solicitud": "12 - Inscribir A en evento A",
+      "metodo": "POST",
+      "estado_http": 201,
+      "comprobaciones": [
+        {
+          "nombre": "Estado HTTP 201",
+          "correcta": true
+        }
+      ]
+    },
+    {
+      "solicitud": "13 - Inscribir B en evento A",
+      "metodo": "POST",
+      "estado_http": 201,
+      "comprobaciones": [
+        {
+          "nombre": "Estado HTTP 201",
+          "correcta": true
+        }
+      ]
+    },
+    {
+      "solicitud": "14 - Inscribir A en evento B",
+      "metodo": "POST",
+      "estado_http": 201,
+      "comprobaciones": [
+        {
+          "nombre": "Estado HTTP 201",
+          "correcta": true
+        }
+      ]
+    },
+    {
+      "solicitud": "15 - N:N - Dos asistentes en evento A",
+      "metodo": "GET",
+      "estado_http": 200,
+      "comprobaciones": [
+        {
+          "nombre": "Estado HTTP 200",
+          "correcta": true
+        },
+        {
+          "nombre": "Cantidad de resultados: 2",
+          "correcta": true
+        }
+      ]
+    },
+    {
+      "solicitud": "16 - N:N - Dos eventos del asistente A",
+      "metodo": "GET",
+      "estado_http": 200,
+      "comprobaciones": [
+        {
+          "nombre": "Estado HTTP 200",
+          "correcta": true
+        },
+        {
+          "nombre": "Cantidad de resultados: 2",
+          "correcta": true
+        }
+      ]
+    },
+    {
+      "solicitud": "17 - Consultar inscripción individual",
+      "metodo": "GET",
+      "estado_http": 200,
+      "comprobaciones": [
+        {
+          "nombre": "Estado HTTP 200",
+          "correcta": true
+        },
+        {
+          "nombre": "Comprobar nombre",
+          "correcta": true
+        }
+      ]
+    },
+    {
+      "solicitud": "18 - Error 409 - Inscripción repetida",
+      "metodo": "POST",
+      "estado_http": 409,
+      "comprobaciones": [
+        {
+          "nombre": "Estado HTTP 409",
+          "correcta": true
+        }
+      ]
+    },
+    {
+      "solicitud": "19 - Error 409 - Correo repetido",
+      "metodo": "POST",
+      "estado_http": 409,
+      "comprobaciones": [
+        {
+          "nombre": "Estado HTTP 409",
+          "correcta": true
+        }
+      ]
+    },
+    {
+      "solicitud": "20 - Error 400 - Correo inválido",
+      "metodo": "POST",
+      "estado_http": 400,
+      "comprobaciones": [
+        {
+          "nombre": "Estado HTTP 400",
+          "correcta": true
+        },
+        {
+          "nombre": "Explica el error en correo",
+          "correcta": true
+        }
+      ]
+    },
+    {
+      "solicitud": "21 - Error 400 - Evento sin fecha",
+      "metodo": "POST",
+      "estado_http": 400,
+      "comprobaciones": [
+        {
+          "nombre": "Estado HTTP 400",
+          "correcta": true
+        },
+        {
+          "nombre": "Explica el error en fecha",
+          "correcta": true
+        }
+      ]
+    },
+    {
+      "solicitud": "22 - Error 404 - Evento inexistente",
+      "metodo": "GET",
+      "estado_http": 404,
+      "comprobaciones": [
+        {
+          "nombre": "Estado HTTP 404",
+          "correcta": true
+        }
+      ]
+    },
+    {
+      "solicitud": "23 - Retirar A del evento A",
+      "metodo": "DELETE",
+      "estado_http": 204,
+      "comprobaciones": [
+        {
+          "nombre": "Estado HTTP 204",
+          "correcta": true
+        }
+      ]
+    },
+    {
+      "solicitud": "24 - Confirmar que A sigue en evento B",
+      "metodo": "GET",
+      "estado_http": 200,
+      "comprobaciones": [
+        {
+          "nombre": "Estado HTTP 200",
+          "correcta": true
+        },
+        {
+          "nombre": "Cantidad de resultados: 1",
+          "correcta": true
+        },
+        {
+          "nombre": "Conserva evento B",
+          "correcta": true
+        }
+      ]
+    },
+    {
+      "solicitud": "25 - Error 404 - Inscripción retirada",
+      "metodo": "GET",
+      "estado_http": 404,
+      "comprobaciones": [
+        {
+          "nombre": "Estado HTTP 404",
+          "correcta": true
+        }
+      ]
+    },
+    {
+      "solicitud": "26 - Eliminar evento A",
+      "metodo": "DELETE",
+      "estado_http": 204,
+      "comprobaciones": [
+        {
+          "nombre": "Estado HTTP 204",
+          "correcta": true
+        }
+      ]
+    },
+    {
+      "solicitud": "27 - Confirmar que asistente B se conserva",
+      "metodo": "GET",
+      "estado_http": 200,
+      "comprobaciones": [
+        {
+          "nombre": "Estado HTTP 200",
+          "correcta": true
+        },
+        {
+          "nombre": "Comprobar eventosIds",
+          "correcta": true
+        }
+      ]
+    },
+    {
+      "solicitud": "28 - Confirmar eliminación de evento A",
+      "metodo": "GET",
+      "estado_http": 404,
+      "comprobaciones": [
+        {
+          "nombre": "Estado HTTP 404",
+          "correcta": true
+        }
+      ]
+    },
+    {
+      "solicitud": "29 - Eliminar asistente A inscrito en B",
+      "metodo": "DELETE",
+      "estado_http": 204,
+      "comprobaciones": [
+        {
+          "nombre": "Estado HTTP 204",
+          "correcta": true
+        }
+      ]
+    },
+    {
+      "solicitud": "30 - Confirmar que evento B se conserva",
+      "metodo": "GET",
+      "estado_http": 200,
+      "comprobaciones": [
+        {
+          "nombre": "Estado HTTP 200",
+          "correcta": true
+        },
+        {
+          "nombre": "Comprobar asistentesIds",
+          "correcta": true
+        }
+      ]
+    },
+    {
+      "solicitud": "31 - Confirmar eliminación de asistente A",
+      "metodo": "GET",
+      "estado_http": 404,
+      "comprobaciones": [
+        {
+          "nombre": "Estado HTTP 404",
+          "correcta": true
+        }
+      ]
+    },
+    {
+      "solicitud": "32 - Eliminar evento B",
+      "metodo": "DELETE",
+      "estado_http": 204,
+      "comprobaciones": [
+        {
+          "nombre": "Estado HTTP 204",
+          "correcta": true
+        }
+      ]
+    },
+    {
+      "solicitud": "33 - Eliminar asistente B",
+      "metodo": "DELETE",
+      "estado_http": 204,
+      "comprobaciones": [
+        {
+          "nombre": "Estado HTTP 204",
+          "correcta": true
+        }
+      ]
+    }
+  ]
+}

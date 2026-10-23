@@ -1,0 +1,353 @@
+{
+  "verificado_en": "2026-10-23T15:32:20-05:00",
+  "base_url": "http://13.59.121.203",
+  "region": "us-east-2",
+  "instancia": "i-06a08ea4b614cec9b",
+  "solicitudes": 33,
+  "comprobaciones": 47,
+  "fallos": 0,
+  "comprobaciones_http_finales": [
+    {
+      "ruta": "/actuator/health",
+      "estado_http": 200,
+      "respuesta": {
+        "status": "UP"
+      }
+    },
+    {
+      "ruta": "/",
+      "estado_http": 200,
+      "respuesta": {
+        "eventos": "/api/eventos",
+        "api": "API de eventos y asistentes",
+        "estado": "En funcionamiento",
+        "asistentes": "/api/asistentes",
+        "salud": "/actuator/health"
+      }
+    },
+    {
+      "ruta": "/api/eventos",
+      "estado_http": 200,
+      "respuesta": []
+    },
+    {
+      "ruta": "/api/asistentes",
+      "estado_http": 200,
+      "respuesta": []
+    }
+  ],
+  "detalle_postman": [
+    {
+      "nombre": "01 - Salud",
+      "metodo": "GET",
+      "url": "http://13.59.121.203/actuator/health",
+      "estado_http": 200,
+      "comprobaciones": [
+        "Estado HTTP 200",
+        "Comprobar status"
+      ]
+    },
+    {
+      "nombre": "02 - Crear evento A",
+      "metodo": "POST",
+      "url": "http://13.59.121.203/api/eventos",
+      "estado_http": 201,
+      "comprobaciones": [
+        "Estado HTTP 201"
+      ]
+    },
+    {
+      "nombre": "03 - Crear evento B",
+      "metodo": "POST",
+      "url": "http://13.59.121.203/api/eventos",
+      "estado_http": 201,
+      "comprobaciones": [
+        "Estado HTTP 201"
+      ]
+    },
+    {
+      "nombre": "04 - Listar eventos",
+      "metodo": "GET",
+      "url": "http://13.59.121.203/api/eventos",
+      "estado_http": 200,
+      "comprobaciones": [
+        "Estado HTTP 200"
+      ]
+    },
+    {
+      "nombre": "05 - Consultar evento A",
+      "metodo": "GET",
+      "url": "http://13.59.121.203/api/eventos/1",
+      "estado_http": 200,
+      "comprobaciones": [
+        "Estado HTTP 200",
+        "Comprobar nombre"
+      ]
+    },
+    {
+      "nombre": "06 - Actualizar evento A",
+      "metodo": "PUT",
+      "url": "http://13.59.121.203/api/eventos/1",
+      "estado_http": 200,
+      "comprobaciones": [
+        "Estado HTTP 200",
+        "Comprobar lugar"
+      ]
+    },
+    {
+      "nombre": "07 - Crear asistente A",
+      "metodo": "POST",
+      "url": "http://13.59.121.203/api/asistentes",
+      "estado_http": 201,
+      "comprobaciones": [
+        "Estado HTTP 201"
+      ]
+    },
+    {
+      "nombre": "08 - Crear asistente B",
+      "metodo": "POST",
+      "url": "http://13.59.121.203/api/asistentes",
+      "estado_http": 201,
+      "comprobaciones": [
+        "Estado HTTP 201"
+      ]
+    },
+    {
+      "nombre": "09 - Listar asistentes",
+      "metodo": "GET",
+      "url": "http://13.59.121.203/api/asistentes",
+      "estado_http": 200,
+      "comprobaciones": [
+        "Estado HTTP 200"
+      ]
+    },
+    {
+      "nombre": "10 - Consultar asistente A",
+      "metodo": "GET",
+      "url": "http://13.59.121.203/api/asistentes/1",
+      "estado_http": 200,
+      "comprobaciones": [
+        "Estado HTTP 200",
+        "Comprobar nombre"
+      ]
+    },
+    {
+      "nombre": "11 - Actualizar asistente A",
+      "metodo": "PUT",
+      "url": "http://13.59.121.203/api/asistentes/1",
+      "estado_http": 200,
+      "comprobaciones": [
+        "Estado HTTP 200",
+        "Comprobar nombre"
+      ]
+    },
+    {
+      "nombre": "12 - Inscribir A en evento A",
+      "metodo": "POST",
+      "url": "http://13.59.121.203/api/eventos/1/asistentes/1",
+      "estado_http": 201,
+      "comprobaciones": [
+        "Estado HTTP 201"
+      ]
+    },
+    {
+      "nombre": "13 - Inscribir B en evento A",
+      "metodo": "POST",
+      "url": "http://13.59.121.203/api/eventos/1/asistentes/2",
+      "estado_http": 201,
+      "comprobaciones": [
+        "Estado HTTP 201"
+      ]
+    },
+    {
+      "nombre": "14 - Inscribir A en evento B",
+      "metodo": "POST",
+      "url": "http://13.59.121.203/api/eventos/2/asistentes/1",
+      "estado_http": 201,
+      "comprobaciones": [
+        "Estado HTTP 201"
+      ]
+    },
+    {
+      "nombre": "15 - N:N - Dos asistentes en evento A",
+      "metodo": "GET",
+      "url": "http://13.59.121.203/api/eventos/1/asistentes",
+      "estado_http": 200,
+      "comprobaciones": [
+        "Estado HTTP 200",
+        "Cantidad de resultados: 2"
+      ]
+    },
+    {
+      "nombre": "16 - N:N - Dos eventos del asistente A",
+      "metodo": "GET",
+      "url": "http://13.59.121.203/api/asistentes/1/eventos",
+      "estado_http": 200,
+      "comprobaciones": [
+        "Estado HTTP 200",
+        "Cantidad de resultados: 2"
+      ]
+    },
+    {
+      "nombre": "17 - Consultar inscripción individual",
+      "metodo": "GET",
+      "url": "http://13.59.121.203/api/eventos/1/asistentes/1",
+      "estado_http": 200,
+      "comprobaciones": [
+        "Estado HTTP 200",
+        "Comprobar nombre"
+      ]
+    },
+    {
+      "nombre": "18 - Error 409 - Inscripción repetida",
+      "metodo": "POST",
+      "url": "http://13.59.121.203/api/eventos/1/asistentes/1",
+      "estado_http": 409,
+      "comprobaciones": [
+        "Estado HTTP 409"
+      ]
+    },
+    {
+      "nombre": "19 - Error 409 - Correo repetido",
+      "metodo": "POST",
+      "url": "http://13.59.121.203/api/asistentes",
+      "estado_http": 409,
+      "comprobaciones": [
+        "Estado HTTP 409"
+      ]
+    },
+    {
+      "nombre": "20 - Error 400 - Correo inválido",
+      "metodo": "POST",
+      "url": "http://13.59.121.203/api/asistentes",
+      "estado_http": 400,
+      "comprobaciones": [
+        "Estado HTTP 400",
+        "Explica el error en correo"
+      ]
+    },
+    {
+      "nombre": "21 - Error 400 - Evento sin fecha",
+      "metodo": "POST",
+      "url": "http://13.59.121.203/api/eventos",
+      "estado_http": 400,
+      "comprobaciones": [
+        "Estado HTTP 400",
+        "Explica el error en fecha"
+      ]
+    },
+    {
+      "nombre": "22 - Error 404 - Evento inexistente",
+      "metodo": "GET",
+      "url": "http://13.59.121.203/api/eventos/9223372036854775807",
+      "estado_http": 404,
+      "comprobaciones": [
+        "Estado HTTP 404"
+      ]
+    },
+    {
+      "nombre": "23 - Retirar A del evento A",
+      "metodo": "DELETE",
+      "url": "http://13.59.121.203/api/eventos/1/asistentes/1",
+      "estado_http": 204,
+      "comprobaciones": [
+        "Estado HTTP 204"
+      ]
+    },
+    {
+      "nombre": "24 - Confirmar que A sigue en evento B",
+      "metodo": "GET",
+      "url": "http://13.59.121.203/api/asistentes/1/eventos",
+      "estado_http": 200,
+      "comprobaciones": [
+        "Estado HTTP 200",
+        "Cantidad de resultados: 1",
+        "Conserva evento B"
+      ]
+    },
+    {
+      "nombre": "25 - Error 404 - Inscripción retirada",
+      "metodo": "GET",
+      "url": "http://13.59.121.203/api/eventos/1/asistentes/1",
+      "estado_http": 404,
+      "comprobaciones": [
+        "Estado HTTP 404"
+      ]
+    },
+    {
+      "nombre": "26 - Eliminar evento A",
+      "metodo": "DELETE",
+      "url": "http://13.59.121.203/api/eventos/1",
+      "estado_http": 204,
+      "comprobaciones": [
+        "Estado HTTP 204"
+      ]
+    },
+    {
+      "nombre": "27 - Confirmar que asistente B se conserva",
+      "metodo": "GET",
+      "url": "http://13.59.121.203/api/asistentes/2",
+      "estado_http": 200,
+      "comprobaciones": [
+        "Estado HTTP 200",
+        "Comprobar eventosIds"
+      ]
+    },
+    {
+      "nombre": "28 - Confirmar eliminación de evento A",
+      "metodo": "GET",
+      "url": "http://13.59.121.203/api/eventos/1",
+      "estado_http": 404,
+      "comprobaciones": [
+        "Estado HTTP 404"
+      ]
+    },
+    {
+      "nombre": "29 - Eliminar asistente A inscrito en B",
+      "metodo": "DELETE",
+      "url": "http://13.59.121.203/api/asistentes/1",
+      "estado_http": 204,
+      "comprobaciones": [
+        "Estado HTTP 204"
+      ]
+    },
+    {
+      "nombre": "30 - Confirmar que evento B se conserva",
+      "metodo": "GET",
+      "url": "http://13.59.121.203/api/eventos/2",
+      "estado_http": 200,
+      "comprobaciones": [
+        "Estado HTTP 200",
+        "Comprobar asistentesIds"
+      ]
+    },
+    {
+      "nombre": "31 - Confirmar eliminación de asistente A",
+      "metodo": "GET",
+      "url": "http://13.59.121.203/api/asistentes/1",
+      "estado_http": 404,
+      "comprobaciones": [
+        "Estado HTTP 404"
+      ]
+    },
+    {
+      "nombre": "32 - Eliminar evento B",
+      "metodo": "DELETE",
+      "url": "http://13.59.121.203/api/eventos/2",
+      "estado_http": 204,
+      "comprobaciones": [
+        "Estado HTTP 204"
+      ]
+    },
+    {
+      "nombre": "33 - Eliminar asistente B",
+      "metodo": "DELETE",
+      "url": "http://13.59.121.203/api/asistentes/2",
+      "estado_http": 204,
+      "comprobaciones": [
+        "Estado HTTP 204"
+      ]
+    }
+  ],
+  "alcance": "Pruebas HTTP ejecutadas sobre la API publica en AWS. El registro EC2 aportado muestra los contenedores PostgreSQL Healthy y API Started. El estado final de CloudFormation y las pruebas de reinicio en AWS se consultan por separado."
+}

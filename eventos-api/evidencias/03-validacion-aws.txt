@@ -1,0 +1,12 @@
+VALIDACIÓN ESTÁTICA DE CLOUDFORMATION
+
+Plantilla: aws/eventos-stack.json
+Región de validación: us-east-2
+Herramienta: cfn-lint 1.58.0
+Resultado: código de salida 0, sin errores ni advertencias
+Script de arranque: sintaxis Bash válida
+UserData: 12.952 bytes (límite 16.384)
+Archivos incorporados: 27, comparados con el proyecto
+Integridad: SHA-256 verificada
+
+Esta validación no crea recursos de AWS ni acredita una URL pública funcionando.

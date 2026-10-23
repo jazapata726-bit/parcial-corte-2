@@ -1,0 +1,789 @@
+{
+  "info": {
+    "name": "Eventos API - Parcial Programación II",
+    "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json",
+    "description": "Ejecuta en orden con el entorno Eventos - Local. Crea dos eventos, dos asistentes y tres inscripciones N:N; verifica ambos CRUD y errores esperados. Termina eliminando solo sus registros. Para nube cambia baseUrl al dominio real sin barra final."
+  },
+  "item": [
+    {
+      "name": "01 - Salud",
+      "request": {
+        "method": "GET",
+        "header": [],
+        "url": "{{baseUrl}}/actuator/health"
+      },
+      "event": [
+        {
+          "listen": "prerequest",
+          "script": {
+            "type": "text/javascript",
+            "exec": [
+              "pm.environment.set(\"ejecucion\", Date.now().toString() + \"-\" + Math.random().toString(36).slice(2, 8));"
+            ]
+          }
+        },
+        {
+          "listen": "test",
+          "script": {
+            "type": "text/javascript",
+            "exec": [
+              "pm.test(\"Estado HTTP 200\", function () { pm.response.to.have.status(200); });",
+              "pm.test(\"Comprobar status\", function () { pm.expect(pm.response.json().status).to.eql(\"UP\"); });"
+            ]
+          }
+        }
+      ]
+    },
+    {
+      "name": "02 - Crear evento A",
+      "request": {
+        "method": "POST",
+        "header": [
+          {
+            "key": "Content-Type",
+            "value": "application/json"
+          }
+        ],
+        "url": "{{baseUrl}}/api/eventos",
+        "body": {
+          "mode": "raw",
+          "raw": "{\n  \"nombre\": \"Conferencia Java\",\n  \"fecha\": \"2027-01-15T09:00:00\",\n  \"lugar\": \"Auditorio principal\"\n}",
+          "options": {
+            "raw": {
+              "language": "json"
+            }
+          }
+        }
+      },
+      "event": [
+        {
+          "listen": "test",
+          "script": {
+            "type": "text/javascript",
+            "exec": [
+              "pm.test(\"Estado HTTP 201\", function () { pm.response.to.have.status(201); });",
+              "if (pm.response.code === 201) pm.environment.set(\"eventoId\", pm.response.json().id);"
+            ]
+          }
+        }
+      ]
+    },
+    {
+      "name": "03 - Crear evento B",
+      "request": {
+        "method": "POST",
+        "header": [
+          {
+            "key": "Content-Type",
+            "value": "application/json"
+          }
+        ],
+        "url": "{{baseUrl}}/api/eventos",
+        "body": {
+          "mode": "raw",
+          "raw": "{\n  \"nombre\": \"Taller Docker\",\n  \"fecha\": \"2027-01-16T10:00:00\",\n  \"lugar\": \"Laboratorio 2\"\n}",
+          "options": {
+            "raw": {
+              "language": "json"
+            }
+          }
+        }
+      },
+      "event": [
+        {
+          "listen": "test",
+          "script": {
+            "type": "text/javascript",
+            "exec": [
+              "pm.test(\"Estado HTTP 201\", function () { pm.response.to.have.status(201); });",
+              "if (pm.response.code === 201) pm.environment.set(\"evento2Id\", pm.response.json().id);"
+            ]
+          }
+        }
+      ]
+    },
+    {
+      "name": "04 - Listar eventos",
+      "request": {
+        "method": "GET",
+        "header": [],
+        "url": "{{baseUrl}}/api/eventos"
+      },
+      "event": [
+        {
+          "listen": "test",
+          "script": {
+            "type": "text/javascript",
+            "exec": [
+              "pm.test(\"Estado HTTP 200\", function () { pm.response.to.have.status(200); });"
+            ]
+          }
+        }
+      ]
+    },
+    {
+      "name": "05 - Consultar evento A",
+      "request": {
+        "method": "GET",
+        "header": [],
+        "url": "{{baseUrl}}/api/eventos/{{eventoId}}"
+      },
+      "event": [
+        {
+          "listen": "test",
+          "script": {
+            "type": "text/javascript",
+            "exec": [
+              "pm.test(\"Estado HTTP 200\", function () { pm.response.to.have.status(200); });",
+              "pm.test(\"Comprobar nombre\", function () { pm.expect(pm.response.json().nombre).to.eql(\"Conferencia Java\"); });"
+            ]
+          }
+        }
+      ]
+    },
+    {
+      "name": "06 - Actualizar evento A",
+      "request": {
+        "method": "PUT",
+        "header": [
+          {
+            "key": "Content-Type",
+            "value": "application/json"
+          }
+        ],
+        "url": "{{baseUrl}}/api/eventos/{{eventoId}}",
+        "body": {
+          "mode": "raw",
+          "raw": "{\n  \"nombre\": \"Conferencia Java\",\n  \"fecha\": \"2027-01-15T09:00:00\",\n  \"lugar\": \"Auditorio actualizado\"\n}",
+          "options": {
+            "raw": {
+              "language": "json"
+            }
+          }
+        }
+      },
+      "event": [
+        {
+          "listen": "test",
+          "script": {
+            "type": "text/javascript",
+            "exec": [
+              "pm.test(\"Estado HTTP 200\", function () { pm.response.to.have.status(200); });",
+              "pm.test(\"Comprobar lugar\", function () { pm.expect(pm.response.json().lugar).to.eql(\"Auditorio actualizado\"); });"
+            ]
+          }
+        }
+      ]
+    },
+    {
+      "name": "07 - Crear asistente A",
+      "request": {
+        "method": "POST",
+        "header": [
+          {
+            "key": "Content-Type",
+            "value": "application/json"
+          }
+        ],
+        "url": "{{baseUrl}}/api/asistentes",
+        "body": {
+          "mode": "raw",
+          "raw": "{\n  \"nombre\": \"Ana Pérez\",\n  \"correo\": \"ana.{{ejecucion}}@example.com\",\n  \"telefono\": \"3001234567\"\n}",
+          "options": {
+            "raw": {
+              "language": "json"
+            }
+          }
+        }
+      },
+      "event": [
+        {
+          "listen": "test",
+          "script": {
+            "type": "text/javascript",
+            "exec": [
+              "pm.test(\"Estado HTTP 201\", function () { pm.response.to.have.status(201); });",
+              "if (pm.response.code === 201) pm.environment.set(\"asistenteId\", pm.response.json().id);"
+            ]
+          }
+        }
+      ]
+    },
+    {
+      "name": "08 - Crear asistente B",
+      "request": {
+        "method": "POST",
+        "header": [
+          {
+            "key": "Content-Type",
+            "value": "application/json"
+          }
+        ],
+        "url": "{{baseUrl}}/api/asistentes",
+        "body": {
+          "mode": "raw",
+          "raw": "{\n  \"nombre\": \"Luis Gómez\",\n  \"correo\": \"luis.{{ejecucion}}@example.com\",\n  \"telefono\": \"3007654321\"\n}",
+          "options": {
+            "raw": {
+              "language": "json"
+            }
+          }
+        }
+      },
+      "event": [
+        {
+          "listen": "test",
+          "script": {
+            "type": "text/javascript",
+            "exec": [
+              "pm.test(\"Estado HTTP 201\", function () { pm.response.to.have.status(201); });",
+              "if (pm.response.code === 201) pm.environment.set(\"asistente2Id\", pm.response.json().id);"
+            ]
+          }
+        }
+      ]
+    },
+    {
+      "name": "09 - Listar asistentes",
+      "request": {
+        "method": "GET",
+        "header": [],
+        "url": "{{baseUrl}}/api/asistentes"
+      },
+      "event": [
+        {
+          "listen": "test",
+          "script": {
+            "type": "text/javascript",
+            "exec": [
+              "pm.test(\"Estado HTTP 200\", function () { pm.response.to.have.status(200); });"
+            ]
+          }
+        }
+      ]
+    },
+    {
+      "name": "10 - Consultar asistente A",
+      "request": {
+        "method": "GET",
+        "header": [],
+        "url": "{{baseUrl}}/api/asistentes/{{asistenteId}}"
+      },
+      "event": [
+        {
+          "listen": "test",
+          "script": {
+            "type": "text/javascript",
+            "exec": [
+              "pm.test(\"Estado HTTP 200\", function () { pm.response.to.have.status(200); });",
+              "pm.test(\"Comprobar nombre\", function () { pm.expect(pm.response.json().nombre).to.eql(\"Ana Pérez\"); });"
+            ]
+          }
+        }
+      ]
+    },
+    {
+      "name": "11 - Actualizar asistente A",
+      "request": {
+        "method": "PUT",
+        "header": [
+          {
+            "key": "Content-Type",
+            "value": "application/json"
+          }
+        ],
+        "url": "{{baseUrl}}/api/asistentes/{{asistenteId}}",
+        "body": {
+          "mode": "raw",
+          "raw": "{\n  \"nombre\": \"Ana María Pérez\",\n  \"correo\": \"ana.{{ejecucion}}@example.com\",\n  \"telefono\": \"3001234567\"\n}",
+          "options": {
+            "raw": {
+              "language": "json"
+            }
+          }
+        }
+      },
+      "event": [
+        {
+          "listen": "test",
+          "script": {
+            "type": "text/javascript",
+            "exec": [
+              "pm.test(\"Estado HTTP 200\", function () { pm.response.to.have.status(200); });",
+              "pm.test(\"Comprobar nombre\", function () { pm.expect(pm.response.json().nombre).to.eql(\"Ana María Pérez\"); });"
+            ]
+          }
+        }
+      ]
+    },
+    {
+      "name": "12 - Inscribir A en evento A",
+      "request": {
+        "method": "POST",
+        "header": [],
+        "url": "{{baseUrl}}/api/eventos/{{eventoId}}/asistentes/{{asistenteId}}"
+      },
+      "event": [
+        {
+          "listen": "test",
+          "script": {
+            "type": "text/javascript",
+            "exec": [
+              "pm.test(\"Estado HTTP 201\", function () { pm.response.to.have.status(201); });"
+            ]
+          }
+        }
+      ]
+    },
+    {
+      "name": "13 - Inscribir B en evento A",
+      "request": {
+        "method": "POST",
+        "header": [],
+        "url": "{{baseUrl}}/api/eventos/{{eventoId}}/asistentes/{{asistente2Id}}"
+      },
+      "event": [
+        {
+          "listen": "test",
+          "script": {
+            "type": "text/javascript",
+            "exec": [
+              "pm.test(\"Estado HTTP 201\", function () { pm.response.to.have.status(201); });"
+            ]
+          }
+        }
+      ]
+    },
+    {
+      "name": "14 - Inscribir A en evento B",
+      "request": {
+        "method": "POST",
+        "header": [],
+        "url": "{{baseUrl}}/api/eventos/{{evento2Id}}/asistentes/{{asistenteId}}"
+      },
+      "event": [
+        {
+          "listen": "test",
+          "script": {
+            "type": "text/javascript",
+            "exec": [
+              "pm.test(\"Estado HTTP 201\", function () { pm.response.to.have.status(201); });"
+            ]
+          }
+        }
+      ]
+    },
+    {
+      "name": "15 - N:N - Dos asistentes en evento A",
+      "request": {
+        "method": "GET",
+        "header": [],
+        "url": "{{baseUrl}}/api/eventos/{{eventoId}}/asistentes"
+      },
+      "event": [
+        {
+          "listen": "test",
+          "script": {
+            "type": "text/javascript",
+            "exec": [
+              "pm.test(\"Estado HTTP 200\", function () { pm.response.to.have.status(200); });",
+              "pm.test(\"Cantidad de resultados: 2\", function () { pm.expect(pm.response.json()).to.have.lengthOf(2); });"
+            ]
+          }
+        }
+      ]
+    },
+    {
+      "name": "16 - N:N - Dos eventos del asistente A",
+      "request": {
+        "method": "GET",
+        "header": [],
+        "url": "{{baseUrl}}/api/asistentes/{{asistenteId}}/eventos"
+      },
+      "event": [
+        {
+          "listen": "test",
+          "script": {
+            "type": "text/javascript",
+            "exec": [
+              "pm.test(\"Estado HTTP 200\", function () { pm.response.to.have.status(200); });",
+              "pm.test(\"Cantidad de resultados: 2\", function () { pm.expect(pm.response.json()).to.have.lengthOf(2); });"
+            ]
+          }
+        }
+      ]
+    },
+    {
+      "name": "17 - Consultar inscripción individual",
+      "request": {
+        "method": "GET",
+        "header": [],
+        "url": "{{baseUrl}}/api/eventos/{{eventoId}}/asistentes/{{asistenteId}}"
+      },
+      "event": [
+        {
+          "listen": "test",
+          "script": {
+            "type": "text/javascript",
+            "exec": [
+              "pm.test(\"Estado HTTP 200\", function () { pm.response.to.have.status(200); });",
+              "pm.test(\"Comprobar nombre\", function () { pm.expect(pm.response.json().nombre).to.eql(\"Ana María Pérez\"); });"
+            ]
+          }
+        }
+      ]
+    },
+    {
+      "name": "18 - Error 409 - Inscripción repetida",
+      "request": {
+        "method": "POST",
+        "header": [],
+        "url": "{{baseUrl}}/api/eventos/{{eventoId}}/asistentes/{{asistenteId}}"
+      },
+      "event": [
+        {
+          "listen": "test",
+          "script": {
+            "type": "text/javascript",
+            "exec": [
+              "pm.test(\"Estado HTTP 409\", function () { pm.response.to.have.status(409); });"
+            ]
+          }
+        }
+      ]
+    },
+    {
+      "name": "19 - Error 409 - Correo repetido",
+      "request": {
+        "method": "POST",
+        "header": [
+          {
+            "key": "Content-Type",
+            "value": "application/json"
+          }
+        ],
+        "url": "{{baseUrl}}/api/asistentes",
+        "body": {
+          "mode": "raw",
+          "raw": "{\n  \"nombre\": \"Ana Pérez\",\n  \"correo\": \"ana.{{ejecucion}}@example.com\",\n  \"telefono\": \"3001234567\"\n}",
+          "options": {
+            "raw": {
+              "language": "json"
+            }
+          }
+        }
+      },
+      "event": [
+        {
+          "listen": "test",
+          "script": {
+            "type": "text/javascript",
+            "exec": [
+              "pm.test(\"Estado HTTP 409\", function () { pm.response.to.have.status(409); });"
+            ]
+          }
+        }
+      ]
+    },
+    {
+      "name": "20 - Error 400 - Correo inválido",
+      "request": {
+        "method": "POST",
+        "header": [
+          {
+            "key": "Content-Type",
+            "value": "application/json"
+          }
+        ],
+        "url": "{{baseUrl}}/api/asistentes",
+        "body": {
+          "mode": "raw",
+          "raw": "{\n  \"nombre\": \"Prueba inválida\",\n  \"correo\": \"no-es-un-correo\"\n}",
+          "options": {
+            "raw": {
+              "language": "json"
+            }
+          }
+        }
+      },
+      "event": [
+        {
+          "listen": "test",
+          "script": {
+            "type": "text/javascript",
+            "exec": [
+              "pm.test(\"Estado HTTP 400\", function () { pm.response.to.have.status(400); });",
+              "pm.test(\"Explica el error en correo\", function () { pm.expect(pm.response.json().campos).to.have.property(\"correo\"); });"
+            ]
+          }
+        }
+      ]
+    },
+    {
+      "name": "21 - Error 400 - Evento sin fecha",
+      "request": {
+        "method": "POST",
+        "header": [
+          {
+            "key": "Content-Type",
+            "value": "application/json"
+          }
+        ],
+        "url": "{{baseUrl}}/api/eventos",
+        "body": {
+          "mode": "raw",
+          "raw": "{\n  \"nombre\": \"Prueba inválida\",\n  \"lugar\": \"Aula\"\n}",
+          "options": {
+            "raw": {
+              "language": "json"
+            }
+          }
+        }
+      },
+      "event": [
+        {
+          "listen": "test",
+          "script": {
+            "type": "text/javascript",
+            "exec": [
+              "pm.test(\"Estado HTTP 400\", function () { pm.response.to.have.status(400); });",
+              "pm.test(\"Explica el error en fecha\", function () { pm.expect(pm.response.json().campos).to.have.property(\"fecha\"); });"
+            ]
+          }
+        }
+      ]
+    },
+    {
+      "name": "22 - Error 404 - Evento inexistente",
+      "request": {
+        "method": "GET",
+        "header": [],
+        "url": "{{baseUrl}}/api/eventos/9223372036854775807"
+      },
+      "event": [
+        {
+          "listen": "test",
+          "script": {
+            "type": "text/javascript",
+            "exec": [
+              "pm.test(\"Estado HTTP 404\", function () { pm.response.to.have.status(404); });"
+            ]
+          }
+        }
+      ]
+    },
+    {
+      "name": "23 - Retirar A del evento A",
+      "request": {
+        "method": "DELETE",
+        "header": [],
+        "url": "{{baseUrl}}/api/eventos/{{eventoId}}/asistentes/{{asistenteId}}"
+      },
+      "event": [
+        {
+          "listen": "test",
+          "script": {
+            "type": "text/javascript",
+            "exec": [
+              "pm.test(\"Estado HTTP 204\", function () { pm.response.to.have.status(204); });"
+            ]
+          }
+        }
+      ]
+    },
+    {
+      "name": "24 - Confirmar que A sigue en evento B",
+      "request": {
+        "method": "GET",
+        "header": [],
+        "url": "{{baseUrl}}/api/asistentes/{{asistenteId}}/eventos"
+      },
+      "event": [
+        {
+          "listen": "test",
+          "script": {
+            "type": "text/javascript",
+            "exec": [
+              "pm.test(\"Estado HTTP 200\", function () { pm.response.to.have.status(200); });",
+              "pm.test(\"Cantidad de resultados: 1\", function () { pm.expect(pm.response.json()).to.have.lengthOf(1); });",
+              "pm.test(\"Conserva evento B\", function () { pm.expect(pm.response.json()[0].id).to.eql(Number(pm.environment.get(\"evento2Id\"))); });"
+            ]
+          }
+        }
+      ]
+    },
+    {
+      "name": "25 - Error 404 - Inscripción retirada",
+      "request": {
+        "method": "GET",
+        "header": [],
+        "url": "{{baseUrl}}/api/eventos/{{eventoId}}/asistentes/{{asistenteId}}"
+      },
+      "event": [
+        {
+          "listen": "test",
+          "script": {
+            "type": "text/javascript",
+            "exec": [
+              "pm.test(\"Estado HTTP 404\", function () { pm.response.to.have.status(404); });"
+            ]
+          }
+        }
+      ]
+    },
+    {
+      "name": "26 - Eliminar evento A",
+      "request": {
+        "method": "DELETE",
+        "header": [],
+        "url": "{{baseUrl}}/api/eventos/{{eventoId}}"
+      },
+      "event": [
+        {
+          "listen": "test",
+          "script": {
+            "type": "text/javascript",
+            "exec": [
+              "pm.test(\"Estado HTTP 204\", function () { pm.response.to.have.status(204); });"
+            ]
+          }
+        }
+      ]
+    },
+    {
+      "name": "27 - Confirmar que asistente B se conserva",
+      "request": {
+        "method": "GET",
+        "header": [],
+        "url": "{{baseUrl}}/api/asistentes/{{asistente2Id}}"
+      },
+      "event": [
+        {
+          "listen": "test",
+          "script": {
+            "type": "text/javascript",
+            "exec": [
+              "pm.test(\"Estado HTTP 200\", function () { pm.response.to.have.status(200); });",
+              "pm.test(\"Comprobar eventosIds\", function () { pm.expect(pm.response.json().eventosIds).to.eql([]); });"
+            ]
+          }
+        }
+      ]
+    },
+    {
+      "name": "28 - Confirmar eliminación de evento A",
+      "request": {
+        "method": "GET",
+        "header": [],
+        "url": "{{baseUrl}}/api/eventos/{{eventoId}}"
+      },
+      "event": [
+        {
+          "listen": "test",
+          "script": {
+            "type": "text/javascript",
+            "exec": [
+              "pm.test(\"Estado HTTP 404\", function () { pm.response.to.have.status(404); });"
+            ]
+          }
+        }
+      ]
+    },
+    {
+      "name": "29 - Eliminar asistente A inscrito en B",
+      "request": {
+        "method": "DELETE",
+        "header": [],
+        "url": "{{baseUrl}}/api/asistentes/{{asistenteId}}"
+      },
+      "event": [
+        {
+          "listen": "test",
+          "script": {
+            "type": "text/javascript",
+            "exec": [
+              "pm.test(\"Estado HTTP 204\", function () { pm.response.to.have.status(204); });"
+            ]
+          }
+        }
+      ]
+    },
+    {
+      "name": "30 - Confirmar que evento B se conserva",
+      "request": {
+        "method": "GET",
+        "header": [],
+        "url": "{{baseUrl}}/api/eventos/{{evento2Id}}"
+      },
+      "event": [
+        {
+          "listen": "test",
+          "script": {
+            "type": "text/javascript",
+            "exec": [
+              "pm.test(\"Estado HTTP 200\", function () { pm.response.to.have.status(200); });",
+              "pm.test(\"Comprobar asistentesIds\", function () { pm.expect(pm.response.json().asistentesIds).to.eql([]); });"
+            ]
+          }
+        }
+      ]
+    },
+    {
+      "name": "31 - Confirmar eliminación de asistente A",
+      "request": {
+        "method": "GET",
+        "header": [],
+        "url": "{{baseUrl}}/api/asistentes/{{asistenteId}}"
+      },
+      "event": [
+        {
+          "listen": "test",
+          "script": {
+            "type": "text/javascript",
+            "exec": [
+              "pm.test(\"Estado HTTP 404\", function () { pm.response.to.have.status(404); });"
+            ]
+          }
+        }
+      ]
+    },
+    {
+      "name": "32 - Eliminar evento B",
+      "request": {
+        "method": "DELETE",
+        "header": [],
+        "url": "{{baseUrl}}/api/eventos/{{evento2Id}}"
+      },
+      "event": [
+        {
+          "listen": "test",
+          "script": {
+            "type": "text/javascript",
+            "exec": [
+              "pm.test(\"Estado HTTP 204\", function () { pm.response.to.have.status(204); });"
+            ]
+          }
+        }
+      ]
+    },
+    {
+      "name": "33 - Eliminar asistente B",
+      "request": {
+        "method": "DELETE",
+        "header": [],
+        "url": "{{baseUrl}}/api/asistentes/{{asistente2Id}}"
+      },
+      "event": [
+        {
+          "listen": "test",
+          "script": {
+            "type": "text/javascript",
+            "exec": [
+              "pm.test(\"Estado HTTP 204\", function () { pm.response.to.have.status(204); });"
+            ]
+          }
+        }
+      ]
+    }
+  ]
+}
